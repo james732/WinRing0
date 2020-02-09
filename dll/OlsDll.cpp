@@ -143,8 +143,20 @@ DWORD Initialize()
 {
 	TCHAR dir[MAX_PATH];
 	TCHAR *ptr;
+	HMODULE hm = NULL;
 
-	GetModuleFileName(NULL, dir, MAX_PATH);
+	if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+		GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+		(LPCTSTR)&Initialize, &hm) == 0)
+	{
+		return OLS_DLL_UNKNOWN_ERROR;
+	}
+
+	if (GetModuleFileName(hm, dir, MAX_PATH) == 0)
+	{
+		return OLS_DLL_UNKNOWN_ERROR;
+	}	
+
 	if((ptr = _tcsrchr(dir, '\\')) != NULL)
 	{
 		*ptr = '\0';
